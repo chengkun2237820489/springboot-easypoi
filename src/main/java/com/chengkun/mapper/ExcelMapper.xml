@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chengkun.mapper.ExcelMapper">
+    <!--查询所有，返回实体类集合-->
+    <select id="findAll" resultType="InsightIec104Mapping">
+        select * from insight_iec104_mapping
+    </select>
+
+    <!--查询所有，返回map集合-->
+    <select id="findAllByMap" resultType="java.util.LinkedHashMap">
+        select * from insight_iec104_mapping
+    </select>
+
+    <!--根据测点类型查询-->
+    <select id="findAllByPointType" resultType="java.util.LinkedHashMap">
+        select * from insight_iec104_mapping where point_type = #{point_type}
+    </select>
+
+    <!--根据测点类型查询, 返回实体类-->
+    <select id="findAllByPointTypeEntity" resultType="InsightIec104Mapping">
+        select * from insight_iec104_mapping where point_type = #{point_type}
+    </select>
+</mapper>
