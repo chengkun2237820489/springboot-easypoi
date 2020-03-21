@@ -311,8 +311,9 @@ public class ExcelUtilController {
         params.put("header", headerMap);
         try {
             long start = System.currentTimeMillis() / 1000;
-            Map<String, Object> result = EasyPoiUtils.importExcelBySaxForMap(new FileInputStream(
-                    new File("E:\\google_downloads\\IEC测点映射20200317102927.xlsx")), params);
+            Map<String, Object> result = EasyPoiUtils.importExcelBySaxForMap("E:\\google_downloads\\IEC测点映射20200317102927.xls", params);
+//            Map<String, Object> result = EasyPoiUtils.importExcelBySaxForMap(new FileInputStream(
+//                    new File("E:\\google_downloads\\IEC测点映射20200317102927.xlsx")), params);
             List<Map<String, Object>> dataList = (List<Map<String, Object>>) result.get("dataList");
             long end = System.currentTimeMillis() / 1000;
             log.info("消耗时间{}秒",end - start);

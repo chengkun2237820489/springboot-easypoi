@@ -466,7 +466,7 @@ public class EasyPoiUtils {
         Map<String, Object> responseMap = Maps.newLinkedHashMap();
         String type = filePath.substring(filePath.lastIndexOf(".") + 1);
         //后缀名不对直接返回
-        if (!type.equals("xls") || !type.equals("xlsx")) {
+        if (!type.equals("xls") && !type.equals("xlsx")) {
             responseMap.put("flag", 0);
             responseMap.put("msg", "不是合法的Excel模板");
             return responseMap;
@@ -533,7 +533,7 @@ public class EasyPoiUtils {
         Map<String, Object> responseMap = Maps.newLinkedHashMap();
         String type = filePath.substring(filePath.lastIndexOf(".") + 1);
         //后缀名不对直接返回
-        if (!type.equals("xls") || !type.equals("xlsx")) {
+        if (!type.equals("xls") && !type.equals("xlsx")) {
             responseMap.put("flag", 0);
             responseMap.put("msg", "不是合法的Excel模板");
             return responseMap;
@@ -637,14 +637,19 @@ public class EasyPoiUtils {
         Map<String, Object> responseMap = Maps.newLinkedHashMap();
         String type = filePath.substring(filePath.lastIndexOf(".") + 1);
         //后缀名不对直接返回
-        if (!type.equals("xls") || !type.equals("xlsx")) {
+        if (!type.equals("xls") && !type.equals("xlsx")) {
             responseMap.put("flag", 0);
             responseMap.put("msg", "不是合法的Excel模板");
             return responseMap;
         }
         File file = new File(filePath);
         try {
-            responseMap = importExcelBySaxForMap(new FileInputStream(file), params);
+            //如果是xls调用普通导入方法
+            if(type.equals("xls")){
+                responseMap = importExcelForMap(new FileInputStream(file),params);
+            }else {
+                responseMap = importExcelBySaxForMap(new FileInputStream(file), params);
+            }
         } catch (FileNotFoundException e) {
             log.error("导入失败", e);
             throw new RuntimeException("导入失败", e);
