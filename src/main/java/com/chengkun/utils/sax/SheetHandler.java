@@ -33,14 +33,6 @@ public class SheetHandler extends DefaultHandler {
     private String lastContents;
 
     /**
-     * @Description 标题行校验标题是否正确
-     * @Author chengkun
-     * @Date 2020/3/19 19:54
-     * @Param null
-     * @Return
-     **/
-    public List<String> titleList;
-    /**
      * 当前行
      **/
     private int curRow = 0;
@@ -49,9 +41,14 @@ public class SheetHandler extends DefaultHandler {
      **/
     private int curCol = 0;
 
+    /**
+     * 总列数
+     **/
+    private int totalCol;
+
     private CellValueType type;
     private String currentLocation, prevLocation;
-    private String lastIndex; //开始标签 只记录c，出现两次c说明有空单元格
+    private String lastIndex; //上一次标签 只记录c，出现两次c说明有空单元格
     private ISaxRowRead read;
 
     private List<SaxReadCellEntity> rowList = new ArrayList<>();
@@ -156,15 +153,22 @@ public class SheetHandler extends DefaultHandler {
             curCol++;
             //如果标签名称为 row ，这说明已到行尾，调用 optRows() 方法
         } else if (COL.equals(name) && StringUtils.isEmpty(lastContents)) {
-            if (name.equals(lastIndex)) { //如果与上次标签相同说明有空行
+            if (name.equals(lastIndex)) { //如果与上次标签相同说明有空单元格
                 rowList.add(curCol, new SaxReadCellEntity(CellValueType.String, ""));
                 curCol++;
             }
         } else if (ROW.equals(name)) {
-            read.parse(curRow, rowList);
-            rowList.clear();
-            curRow++;
-            curCol = 0;
+            //判断总列数是否一致
+            if (curCol > totalCol && curRow == 0) {
+                totalCol = curCol;
+            }
+            //列数不一致，说明在表格外部填写数据了
+            if (rowList.size() == totalCol) {
+                read.parse(curRow, rowList);
+                rowList.clear();
+                curRow++;
+                curCol = 0;
+            }
         }
 
     }
