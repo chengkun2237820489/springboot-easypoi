@@ -41,10 +41,6 @@ public class SheetHandler extends DefaultHandler {
      **/
     private int curCol = 0;
 
-    /**
-     * 总列数
-     **/
-    private int totalCol;
 
     private CellValueType type;
     private String currentLocation, prevLocation;
@@ -158,17 +154,10 @@ public class SheetHandler extends DefaultHandler {
                 curCol++;
             }
         } else if (ROW.equals(name)) {
-            //判断总列数是否一致
-            if (curCol > totalCol && curRow == 0) {
-                totalCol = curCol;
-            }
-            //列数不一致，说明在表格外部填写数据了
-            if (rowList.size() == totalCol) {
-                read.parse(curRow, rowList);
-                rowList.clear();
-                curRow++;
-                curCol = 0;
-            }
+            read.parse(curRow, rowList);
+            rowList.clear();
+            curRow++;
+            curCol = 0;
         }
 
     }
