@@ -25,6 +25,11 @@ import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -46,10 +51,10 @@ public class EasyPoiUtils {
      * @param title          表头名称
      * @param sheetName      sheet表名
      * @param pojoClass      映射的实体类
-     * @param isCreateHeader 是否创建表头
      * @param fileName       文件名称
-     * @param filePath       文件路径
+     * @param filePath       文件路径 + 文件名称
      * @param style          文件样式
+     * @param isCreateHeader 是否创建表头
      * @param response
      * @return
      * @Author chengkun
@@ -71,7 +76,7 @@ public class EasyPoiUtils {
      * @Param sheetName     sheet表名
      * @Param pojoClass     映射的实体类
      * @Param fileName      文件名称
-     * @Param filePath      文件路径
+     * @Param filePath      文件路径 + 文件名称
      * @Param style         导出样式
      * @Param response
      * @Return void
@@ -87,9 +92,11 @@ public class EasyPoiUtils {
      * @Author chengkun
      * @Date 2020/3/18 9:05
      * @Param list          导出的实体类
-     * @Param sheetName     sheet表名
-     * @Param header         表头名称  key => 标题行名称  value => 标题行英文标识，返回数据以此标识为key
+     * @Param title         excel大标题
+     * @Param sheetName     sheet名
+     * @Param header        表头名称  key => 标题行名称  value => 标题行英文标识，返回数据以此标识为key
      * @Param fileName      文件名称
+     * @Param filePath      文件路径 + 文件名称
      * @Param style         导出样式
      * @Param response
      * @Return void
@@ -111,7 +118,7 @@ public class EasyPoiUtils {
      * @Description 获取单元格长度，为字体长度1.5倍,最大为255字符
      * @Author chengkun
      * @Date 2020/3/20 11:06
-     * @Param key
+     * @Param key 单元格内容
      * @Return int
      **/
     private static int getColWidth(String key) {
@@ -175,6 +182,7 @@ public class EasyPoiUtils {
      * sheets中map为每个sheet页内容 ：
      * header = > 标题行，map集合，与导出map定义一致    title = > 大标题   sheetName = > 工作簿名称     dataList = > sheet也数据
      * @Param fileName      文件名称
+     * @Param filePath      文件路径 + 文件名称
      * @Param style         导出样式
      * @Param response
      * @Return void
@@ -220,6 +228,7 @@ public class EasyPoiUtils {
             sheetExportList.add(sheetExportMap);
             dataSize.add(dataList.size());
         }
+        long start = System.currentTimeMillis() / 1000;
         Workbook workbook = getWorkbook(type, Collections.max(dataSize));
         for (Map<String, Object> map : sheetExportList) {
             ExcelExportService server = new ExcelExportService();
@@ -229,6 +238,8 @@ public class EasyPoiUtils {
             Collection<?> data = (Collection<?>) map.get("data");
             server.createSheetForMap(workbook, param, entity, data);
         }
+        long end = System.currentTimeMillis() / 1000;
+        log.info("导出excel处理时间：{}秒", end - start);
         downLoadExcel(fileName, filePath, response, workbook);
     }
 
@@ -240,6 +251,7 @@ public class EasyPoiUtils {
      * sheets中map为每个sheet页内容 ：
      * header = > 标题行，为实体类class    title = > 大标题   sheetName = > 工作簿名称     dataList = > sheet也数据
      * @Param fileName      文件名称
+     * @Param filePath      文件路径 + 文件名称
      * @Param style         导出样式
      * @Param response
      * @Return void
@@ -277,7 +289,10 @@ public class EasyPoiUtils {
             dataSize.add(dataList.size());
         }
         // 执行方法
+        long start = System.currentTimeMillis() / 1000;
         Workbook workbook = ExcelExportUtil.exportExcel(sheetExportList, type);
+        long end = System.currentTimeMillis() / 1000;
+        log.info("导出excel处理时间：{}秒", end - start);
         downLoadExcel(fileName, filePath, response, workbook);
     }
 
@@ -307,6 +322,7 @@ public class EasyPoiUtils {
      * @param sheetName sheet表名
      * @param pojoClass 映射的实体类
      * @param fileName  文件名称
+     * @param filePath  文件路径 + 文件名称
      * @param response
      * @return
      * @Author chengkun
@@ -326,7 +342,6 @@ public class EasyPoiUtils {
      * @Param title         表头名称
      * @Param sheetName     sheet表名
      * @Param pojoClass     映射的实体类
-     * @Param fileName      文件名称
      * @Param style         导出样式
      * @author chengkun
      * @date 2020/3/18 10:40
@@ -334,7 +349,10 @@ public class EasyPoiUtils {
     public static Workbook exportExcel(List<?> list, String title, String sheetName, Class<?> pojoClass, Class<?> style) {
         ExportParams exportParams = new ExportParams(title, sheetName);
         exportParams.setStyle(style);
+        long start = System.currentTimeMillis() / 1000;
         Workbook workbook = ExcelExportUtil.exportExcel(exportParams, pojoClass, list);
+        long end = System.currentTimeMillis() / 1000;
+        log.info("导出excel处理时间：{}秒", end - start);
         return workbook;
     }
 
@@ -344,7 +362,7 @@ public class EasyPoiUtils {
      * @param list         导出的实体集合
      * @param pojoClass    pojo实体
      * @param fileName     导出的文件名 数据量过大建议使用.xlsx
-     * @param filePath     导出文件路径
+     * @param filePath     导出文件路径 + 文件名称
      * @param response
      * @param exportParams ExportParams封装实体
      * @return
@@ -358,7 +376,10 @@ public class EasyPoiUtils {
         } else if (type.equals("xlsx")) {
             exportParams.setType(ExcelType.XSSF);
         }
+        long start = System.currentTimeMillis() / 1000;
         Workbook workbook = ExcelExportUtil.exportExcel(exportParams, pojoClass, list);
+        long end = System.currentTimeMillis() / 1000;
+        log.info("导出excel处理时间：{}秒", end - start);
         downLoadExcel(fileName, filePath, response, workbook);
     }
 
@@ -366,7 +387,7 @@ public class EasyPoiUtils {
      * @param list         导出的实体集合
      * @param colList      定义map实体
      * @param fileName     导出的文件名
-     * @param filePath     导出文件路径
+     * @param filePath     导出文件路径 + 文件名
      * @param response
      * @param exportParams ExportParams封装实体
      * @Description map导出
@@ -381,7 +402,10 @@ public class EasyPoiUtils {
         } else if (type.equals("xlsx")) {
             exportParams.setType(ExcelType.XSSF);
         }
+        long start = System.currentTimeMillis() / 1000;
         Workbook workbook = ExcelExportUtil.exportExcel(exportParams, colList, list);
+        long end = System.currentTimeMillis() / 1000;
+        log.info("导出excel处理时间：{}秒", end - start);
         downLoadExcel(fileName, filePath, response, workbook);
     }
 
@@ -389,7 +413,7 @@ public class EasyPoiUtils {
      * 功能描述：Excel导出
      *
      * @param fileName 文件名称
-     * @param fileName 下载文件路径
+     * @param filePath 下载文件路径 路径+文件名称
      * @param response
      * @param workbook Excel对象
      * @return
@@ -435,6 +459,7 @@ public class EasyPoiUtils {
      *
      * @param list     导出的实体集合
      * @param fileName 导出的文件名
+     * @param filePath 导出的文件路径 + 文件名
      * @param response
      * @return
      * @Author chengkun
@@ -443,11 +468,14 @@ public class EasyPoiUtils {
     private static void defaultExport(List<Map<String, Object>> list, String fileName, String filePath, HttpServletResponse response) {
         String type = fileName.substring(fileName.lastIndexOf(".") + 1);
         Workbook workbook = null;
+        long start = System.currentTimeMillis() / 1000;
         if (type.equals("xls")) {
             workbook = ExcelExportUtil.exportExcel(list, ExcelType.HSSF);
         } else if (type.equals("xlsx")) {
             workbook = ExcelExportUtil.exportExcel(list, ExcelType.XSSF);
         }
+        long end = System.currentTimeMillis() / 1000;
+        log.info("导出excel处理时间：{}秒", end - start);
         if (workbook != null) ;
         downLoadExcel(fileName, filePath, response, workbook);
     }
@@ -455,9 +483,9 @@ public class EasyPoiUtils {
     /**
      * 功能描述：根据文件路径来导入Excel
      *
-     * @param filePath  文件路径
-     * @param params    导入参数
+     * @param filePath  文件路径 + 文件名
      * @param pojoClass Excel实体类
+     * @param params    导入参数
      * @return
      * @Author chengkun
      * @Date 2020/3/17 19:40
@@ -471,12 +499,23 @@ public class EasyPoiUtils {
             responseMap.put("msg", "不是合法的Excel模板");
             return responseMap;
         }
-        File file = new File(filePath);
+        InputStream in = null;
+        List<T> result = null;
         try {
-            responseMap = importExcel(new FileInputStream(file), pojoClass, params);
-        } catch (FileNotFoundException e) {
-            log.error("导入失败", e);
-            throw new RuntimeException("导入失败", e);
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            ResponseEntity<byte[]> entity = restTemplate.exchange(filePath, HttpMethod.GET, new HttpEntity<>(headers), byte[].class);
+            byte[] body = entity.getBody();
+            in = new ByteArrayInputStream(body);
+            responseMap = importExcel(in, pojoClass, params);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            try {
+                in.close();
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+            }
         }
         return responseMap;
     }
@@ -485,8 +524,8 @@ public class EasyPoiUtils {
      * 功能描述：根据文件流来导入Excel
      *
      * @param inputStream 文件流
-     * @param params      导入参数  headRows = > 表头行数 titleRows = > 表格标题行数 header = > 标题行，与map导出定义一致
      * @param pojoClass   Excel实体类
+     * @param params      导入参数  headRows = > 表头行数 titleRows = > 表格标题行数 header = > 标题行，与map导出定义一致
      * @return
      * @Author chengkun
      * @Date 2020/3/17 19:40
@@ -505,8 +544,11 @@ public class EasyPoiUtils {
         importParams.setImportFields(importFields);
         List<T> list = null;
         try {
+            long start = System.currentTimeMillis() / 1000;
             list = ExcelImportUtil.importExcel(inputStream, pojoClass, importParams);
             responseMap.put("dataList", list);
+            long end = System.currentTimeMillis() / 1000;
+            log.info("导入excel处理时间：{}秒", end - start);
             //判断标题行是否一致
         } catch (Exception e) {
             //自定义异常判断
@@ -525,7 +567,7 @@ public class EasyPoiUtils {
      * @Description map导入, 根据文件路径导入
      * @Author chengkun
      * @Date 2020/3/20 16:23
-     * @Param filePath         文件路径
+     * @Param filePath         文件路径 + 文件名
      * @Param params          导入参数
      * @Return java.util.Map<java.lang.String, java.lang.Object>
      **/
@@ -538,12 +580,22 @@ public class EasyPoiUtils {
             responseMap.put("msg", "不是合法的Excel模板");
             return responseMap;
         }
-        File file = new File(filePath);
+        InputStream in = null;
         try {
-            responseMap = importExcelForMap(new FileInputStream(file), params);
-        } catch (FileNotFoundException e) {
-            log.error("导入失败", e);
-            throw new RuntimeException("导入失败", e);
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            ResponseEntity<byte[]> entity = restTemplate.exchange(filePath, HttpMethod.GET, new HttpEntity<>(headers), byte[].class);
+            byte[] body = entity.getBody();
+            in = new ByteArrayInputStream(body);
+            responseMap = importExcelForMap(in, params);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            try {
+                in.close();
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+            }
         }
         return responseMap;
     }
@@ -572,8 +624,11 @@ public class EasyPoiUtils {
         importParams.setDataHandler(new MapImportHandler(headerMap));
         List<T> list = null;
         try {
+            long start = System.currentTimeMillis() / 1000;
             list = ExcelImportUtil.importExcel(inputStream, Map.class, importParams);
             responseMap.put("dataList", list);
+            long end = System.currentTimeMillis() / 1000;
+            log.info("导入excel处理时间：{}秒", end - start);
             //判断标题行是否一致
         } catch (Exception e) {
             //自定义异常判断
@@ -603,6 +658,7 @@ public class EasyPoiUtils {
         importParams.setHeadRows((Integer) params.get("headRows"));
         importParams.setTitleRows((Integer) params.get("titleRows"));
         List<T> result = Lists.newArrayList();
+        long start = System.currentTimeMillis() / 1000;
         new SaxReadExcel().readExcel(inputStream, pojoClass, importParams, new IReadHandler<T>() {
             /**
              * 处理解析对象
@@ -622,14 +678,17 @@ public class EasyPoiUtils {
                 log.info("从Excel导入数据一共 {} 行", result.size());
             }
         });
+        long end = System.currentTimeMillis() / 1000;
+        log.info("导入excel处理时间：{}秒", end - start);
         return result;
     }
 
     /**
      * @Description sax导入，map导入
+     * sax导入只支持xlsx，如果导入文件为xls使用普通导入
      * @Author chengkun
      * @Date 2020/3/20 21:15
-     * @Param inputStream
+     * @Param filePath
      * @Param params
      * @Return java.util.Map<java.lang.String, java.lang.Object>
      **/
@@ -642,17 +701,27 @@ public class EasyPoiUtils {
             responseMap.put("msg", "不是合法的Excel模板");
             return responseMap;
         }
-        File file = new File(filePath);
+        InputStream in = null;
         try {
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            ResponseEntity<byte[]> entity = restTemplate.exchange(filePath, HttpMethod.GET, new HttpEntity<>(headers), byte[].class);
+            byte[] body = entity.getBody();
+            in = new ByteArrayInputStream(body);
             //如果是xls调用普通导入方法
-            if(type.equals("xls")){
-                responseMap = importExcelForMap(new FileInputStream(file),params);
-            }else {
-                responseMap = importExcelBySaxForMap(new FileInputStream(file), params);
+            if (type.equals("xls")) {
+                responseMap = importExcelForMap(in, params);
+            } else {
+                responseMap = importExcelBySaxForMap(in, params);
             }
-        } catch (FileNotFoundException e) {
-            log.error("导入失败", e);
-            throw new RuntimeException("导入失败", e);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            try {
+                in.close();
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+            }
         }
         return responseMap;
     }
@@ -675,8 +744,11 @@ public class EasyPoiUtils {
         List<Map<String, Object>> dataList = Lists.newArrayList();
         MapIReadHandler readHandler = new MapIReadHandler(dataList, headerMap);
         try {
+            long start = System.currentTimeMillis() / 1000;
             new SaxReadExcel().readExcel(inputStream, Map.class, importParams, readHandler);
             responseMap.put("dataList", dataList);
+            long end = System.currentTimeMillis() / 1000;
+            log.info("导入excel处理时间：{}秒", end - start);
         } catch (Exception e) {
             //自定义异常判断
             if (e.getMessage().indexOf("不是合法的Excel模板") != -1) {
