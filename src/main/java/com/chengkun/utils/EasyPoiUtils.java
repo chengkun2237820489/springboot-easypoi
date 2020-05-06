@@ -115,6 +115,35 @@ public class EasyPoiUtils {
     }
 
     /**
+     * @Description map导出(是否创建表头)
+     * @Author chengkun
+     * @Date 2020/3/18 9:05
+     * @Param list           导出的实体类
+     * @Param title          excel大标题
+     * @Param sheetName      sheet名
+     * @Param header         表头名称  key => 标题行名称  value => 标题行英文标识，返回数据以此标识为key
+     * @Param fileName       文件名称
+     * @Param filePath       文件路径 + 文件名称
+     * @Param style          导出样式
+     * @param isCreateHeader 是否创建表头
+     * @Param response
+     * @Return void
+     **/
+    public static void exportExcelForMap(List<?> list, String title, String sheetName, Map<String, Object> header, String fileName, String filePath, Class<?> style, boolean isCreateHeader, HttpServletResponse response) {
+        ExportParams exportParams = new ExportParams(title, sheetName);
+        exportParams.setCreateHeadRows(isCreateHeader); //是否创建表头
+        exportParams.setStyle(style);
+        //构造对象等同于@Excel
+        List<ExcelExportEntity> colList = new ArrayList<>();
+        ExcelExportEntity exportEntity;
+        for (String key : header.keySet()) {
+            exportEntity = new ExcelExportEntity(key, header.get(key), getColWidth(key));
+            colList.add(exportEntity);
+        }
+        defaultExport(list, colList, fileName, filePath, response, exportParams);
+    }
+
+    /**
      * @Description 获取单元格长度，为字体长度1.5倍,最大为255字符
      * @Author chengkun
      * @Date 2020/3/20 11:06
