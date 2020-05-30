@@ -22,4 +22,21 @@
     <select id="findAllByPointTypeEntity" resultType="InsightIec104Mapping">
         select * from insight_iec104_mapping where point_type = #{point_type}
     </select>
+
+    <!-- 根据电站id查询设备 -->
+    <select id="findDeviceByPsId" parameterType="java.util.HashMap" resultType="java.util.LinkedHashMap">
+        select
+        *
+        from power_device where ps_id = #{ps_id}
+    </select>
+
+    <!-- 获取所有通道号 -->
+    <select id="findAllChannel" parameterType="java.util.HashMap" resultType="java.util.LinkedHashMap">
+        select * from power_device_chnnl
+    </select>
+
+    <!-- 根据设备类型和测点类型查询测点 -->
+    <select id="findPointList" parameterType="java.util.HashMap" resultType="java.util.LinkedHashMap">
+        select * from power_device_point where device_type = #{device_type} and point_type = #{point_type} order by point_id limit 5
+    </select>
 </mapper>

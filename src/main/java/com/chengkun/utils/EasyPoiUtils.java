@@ -8,6 +8,7 @@ import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
+import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import cn.afterturn.easypoi.excel.export.ExcelExportService;
@@ -115,6 +116,7 @@ public class EasyPoiUtils {
     }
 
     /**
+     * @param isCreateHeader 是否创建表头
      * @Description map导出(是否创建表头)
      * @Author chengkun
      * @Date 2020/3/18 9:05
@@ -125,7 +127,6 @@ public class EasyPoiUtils {
      * @Param fileName       文件名称
      * @Param filePath       文件路径 + 文件名称
      * @Param style          导出样式
-     * @param isCreateHeader 是否创建表头
      * @Param response
      * @Return void
      **/
@@ -141,6 +142,26 @@ public class EasyPoiUtils {
             colList.add(exportEntity);
         }
         defaultExport(list, colList, fileName, filePath, response, exportParams);
+    }
+
+    /**
+     * @Description 模板导出
+     * @Author chengkun
+     * @Date 2020/3/18 9:05
+     * @Param params         模板封装数据
+     * @Param templatePath   模板文件路径
+     * @Param fileName      文件名称
+     * @Param filePath      文件路径 + 文件名称
+     * @Param response
+     * @Return void
+     **/
+    public static void exportExcelForTemplate(Map<String, Object> params, String templatePath, String fileName, String filePath, HttpServletResponse response) {
+        TemplateExportParams exportParams = new TemplateExportParams(templatePath); //模板参数，只需模板文件路径
+        long start = System.currentTimeMillis() / 1000;
+        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, params);
+        long end = System.currentTimeMillis() / 1000;
+        log.info("导出excel处理时间：{}秒", end - start);
+        downLoadExcel(fileName, filePath, response, workbook);
     }
 
     /**

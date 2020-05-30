@@ -2,6 +2,7 @@ package com.chengkun.service;
 
 import com.chengkun.entity.InsightIec104Mapping;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -38,11 +39,20 @@ public interface ExcelService {
     List<Map<String, Object>> findAllByPointType(Map<String, String> params);
 
     /**
-     * @Description 根据测点类型查询,返回实体类
+     * @Description 根据测点类型查询, 返回实体类
      * @Author chengkun
      * @Date 2020/3/18 15:40
      * @Param params
      * @Return java.util.List<java.util.Map < java.lang.String, java.lang.Object>>
      **/
     List<InsightIec104Mapping> findAllByPointTypeEntity(Map<String, String> params);
+
+    /**
+     * @Description 导出iec映射
+     * @Author chengkun
+     * @Date 2020/3/27 17:15
+     * @Param response
+     * @Return void
+     **/
+    void exportExcelIecMapping(HttpServletResponse response);
 }

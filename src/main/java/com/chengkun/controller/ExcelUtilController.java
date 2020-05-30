@@ -16,6 +16,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -117,7 +119,7 @@ public class ExcelUtilController {
             Map<String, Object> valMap = new HashMap<String, Object>();
             valMap.put("dt", "日期" + i);
             valMap.put("pv", "pv" + i);
-            valMap.put("uv", "uv" + i);
+//            valMap.put("uv", "uv" + i);
             List<Map<String, Object>> list_1 = new ArrayList<Map<String, Object>>();
             Map<String, Object> valMap_1 = new HashMap<String, Object>();
             for (int j = 0; j < 5; j++) {
@@ -199,6 +201,21 @@ public class ExcelUtilController {
         sheets.add(sheet2);
         //List<Map<String, Object>> sheets, String fileName, String filePath, Class<?> style, HttpServletResponse response
         EasyPoiUtils.exportSheetsExcelForPoJo(sheets, "多sheet页pojo导出.xlsx", null, ExportExcelStyle.class, response);
+    }
+
+    @ApiOperation(value = "根据模板导出Excel")
+    @GetMapping("/exportExcelForTemplate")
+    public void exportExcelForTemplate(HttpServletResponse response) throws FileNotFoundException {
+        //封装模板数据
+        Map<String, Object> dataMap = Maps.newLinkedHashMap();
+        dataMap.put("title", "模板导出测试");
+        for (int i = 0; i <= 40; i++) {
+            dataMap.put("data" + i, 100 + i);
+        }
+        //获取模板文件路径
+        File file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + "excelTemplate/runningReportTemplate_zh_CN.xlsx");
+        String templatePath = file.getPath();
+        EasyPoiUtils.exportExcelForTemplate(dataMap, templatePath, "模板导出测试.xlsx", null, response);
     }
 
     @ApiOperation(value = "Excel导入")
@@ -316,10 +333,16 @@ public class ExcelUtilController {
 //                    new File("E:\\google_downloads\\IEC测点映射20200317102927.xlsx")), params);
             List<Map<String, Object>> dataList = (List<Map<String, Object>>) result.get("dataList");
             long end = System.currentTimeMillis() / 1000;
-            log.info("消耗时间{}秒",end - start);
+            log.info("消耗时间{}秒", end - start);
         } catch (Exception e) {
             log.error("导入失败：{}", e.getMessage());
         }
         return "导入成功";
+    }
+
+    @ApiOperation(value = "使用map导出iec映射")
+    @GetMapping("/exportExcelIecMapping")
+    public void exportExcelIecMapping(HttpServletResponse response) {
+        excelService.exportExcelIecMapping(response);
     }
 }

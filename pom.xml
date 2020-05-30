@@ -23,21 +23,21 @@
 
     <dependencies>
         <!-- 集成easypoi组件 .导出excel http://easypoi.mydoc.io/ -->
-       <!-- <dependency>
-            <groupId>cn.afterturn</groupId>
-            <artifactId>easypoi-base</artifactId>
-            <version>4.1.3</version>
-        </dependency>
-        <dependency>
-            <groupId>cn.afterturn</groupId>
-            <artifactId>easypoi-web</artifactId>
-            <version>4.1.3</version>
-        </dependency>
-        <dependency>
-            <groupId>cn.afterturn</groupId>
-            <artifactId>easypoi-annotation</artifactId>
-            <version>4.1.3</version>
-        </dependency>-->
+        <!-- <dependency>
+             <groupId>cn.afterturn</groupId>
+             <artifactId>easypoi-base</artifactId>
+             <version>4.1.3</version>
+         </dependency>
+         <dependency>
+             <groupId>cn.afterturn</groupId>
+             <artifactId>easypoi-web</artifactId>
+             <version>4.1.3</version>
+         </dependency>
+         <dependency>
+             <groupId>cn.afterturn</groupId>
+             <artifactId>easypoi-annotation</artifactId>
+             <version>4.1.3</version>
+         </dependency>-->
 
         <!-- 这个依赖相当于上面 easypoi-base、easypoi-web、easypoi-annotation这3个依赖,可以引入上面3个依赖，也可以引入下面这一个，两个方案二选一-->
         <dependency>
@@ -215,9 +215,29 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
-                    <include>**/**</include>
+                    <include>**/*.properties</include>
+                    <include>**/*.yml</include>
+                    <include>**/*.xml</include>
+                    <include>**/*.tld</include>
+                    <include>**/*.doc</include>
                 </includes>
                 <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <!--不对excel模板过滤-->
+                    <include>**/*.xlsx</include>
+                    <include>**/*.xls</include>
+                </includes>
+                <excludes>
+                    <exclude>**/*.properties</exclude>
+                    <exclude>**/*.yml</exclude>
+                    <exclude>**/*.xml</exclude>
+                    <exclude>**/*.tld</exclude>
+                    <exclude>**/*.doc</exclude>
+                </excludes>
+                <filtering>false</filtering>
             </resource>
         </resources>
     </build>
