@@ -3,6 +3,34 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.chengkun.mapper.ExcelMapper">
+    <insert id="insertPointList" parameterType="java.util.List">
+        INSERT INTO
+        insight_iec104_mapping(
+            channel_id,
+            iec_point,
+            uuid,
+            point_id,
+            point_type,
+            is_enable,
+            point_name,
+            iec_parameter,
+            iec_offset,
+            iec_negate
+        ) VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.channelId},
+            #{item.iecPoint},
+            #{item.uuid},
+            #{item.pointId},
+            #{item.pointType},
+            #{item.isEnable},
+            #{item.pointName},
+            #{item.iecParameter},
+            #{item.iecOffset},
+            #{item.iecNegate})
+        </foreach>
+    </insert>
+
     <!--查询所有，返回实体类集合-->
     <select id="findAll" resultType="InsightIec104Mapping">
         select * from insight_iec104_mapping

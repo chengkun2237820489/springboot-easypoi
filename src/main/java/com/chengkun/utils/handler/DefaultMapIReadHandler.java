@@ -3,9 +3,9 @@ package com.chengkun.utils.handler;
  * sungrow all right reserved
  **/
 
+import cn.afterturn.easypoi.exception.excel.ExcelImportException;
 import cn.afterturn.easypoi.exception.excel.enums.ExcelImportEnum;
 import cn.afterturn.easypoi.handler.inter.IReadHandler;
-import com.chengkun.utils.exception.ExcelImportException;
 import com.google.common.collect.Maps;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
@@ -20,7 +20,7 @@ import java.util.Map;
  **/
 @Log4j2
 @Data
-public class MapIReadHandler implements IReadHandler<Map<String, Object>> {
+public class DefaultMapIReadHandler implements IReadHandler<Map<String, Object>> {
 
     //解析的数据
     public List<Map<String, Object>> result;
@@ -31,7 +31,7 @@ public class MapIReadHandler implements IReadHandler<Map<String, Object>> {
     //数据map，将标题替换为对应key
     private Map<String, Object> dataMap;
 
-    public MapIReadHandler(List<Map<String, Object>> result, Map<String, Object> headerMap) {
+    public DefaultMapIReadHandler(List<Map<String, Object>> result, Map<String, Object> headerMap) {
         this.result = result;
         this.headerMap = headerMap;
     }

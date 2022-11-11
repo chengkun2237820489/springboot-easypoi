@@ -7,7 +7,7 @@ import com.chengkun.entity.InsightIec104Mapping;
 import com.chengkun.mapper.ExcelMapper;
 import com.chengkun.service.ExcelService;
 import com.chengkun.utils.EasyPoiUtils;
-import com.chengkun.utils.style.ExportExcelStyle;
+import com.chengkun.utils.style.DefaultExportExcelStyle;
 import com.google.common.collect.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -169,7 +169,7 @@ public class ExcelServiceImpl implements ExcelService {
         headerMap.put("修正系数", "iec_parameter");
         headerMap.put("偏移量", "iec_offset");
         headerMap.put("取反(1：是，0：否)", "iec_negate");
-        EasyPoiUtils.exportExcelForMap(dataList, "easypoi导出map功能", "Export", headerMap, "easypoi导出map功能.xlsx", null, ExportExcelStyle.class, response);
+        EasyPoiUtils.exportExcelForMap(dataList, "easypoi导出map功能", "Export", headerMap, "easypoi导出map功能.xlsx", DefaultExportExcelStyle.class, response);
     }
 
 }

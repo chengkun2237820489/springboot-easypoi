@@ -23,27 +23,27 @@
 
     <dependencies>
         <!-- 集成easypoi组件 .导出excel http://easypoi.mydoc.io/ -->
-        <!-- <dependency>
-             <groupId>cn.afterturn</groupId>
-             <artifactId>easypoi-base</artifactId>
-             <version>4.1.3</version>
-         </dependency>
-         <dependency>
-             <groupId>cn.afterturn</groupId>
-             <artifactId>easypoi-web</artifactId>
-             <version>4.1.3</version>
-         </dependency>
-         <dependency>
-             <groupId>cn.afterturn</groupId>
-             <artifactId>easypoi-annotation</artifactId>
-             <version>4.1.3</version>
-         </dependency>-->
+       <!-- <dependency>
+            <groupId>cn.afterturn</groupId>
+            <artifactId>easypoi-base</artifactId>
+            <version>4.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.afterturn</groupId>
+            <artifactId>easypoi-web</artifactId>
+            <version>4.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.afterturn</groupId>
+            <artifactId>easypoi-annotation</artifactId>
+            <version>4.3.0</version>
+        </dependency>-->
 
         <!-- 这个依赖相当于上面 easypoi-base、easypoi-web、easypoi-annotation这3个依赖,可以引入上面3个依赖，也可以引入下面这一个，两个方案二选一-->
         <dependency>
             <groupId>cn.afterturn</groupId>
             <artifactId>easypoi-spring-boot-starter</artifactId>
-            <version>4.1.3</version>
+            <version>4.3.0</version>
         </dependency>
         <!-- sax 读取时候用到的 -->
         <dependency>
@@ -80,7 +80,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.56</version>
+            <version>1.2.83</version>
         </dependency>
         <!-- 引入Spring封装的jdbc-->
         <dependency>

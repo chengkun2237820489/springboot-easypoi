@@ -3,9 +3,9 @@ package com.chengkun.utils.handler;
  * sungrow all right reserved
  **/
 
+import cn.afterturn.easypoi.exception.excel.ExcelImportException;
 import cn.afterturn.easypoi.exception.excel.enums.ExcelImportEnum;
 import cn.afterturn.easypoi.handler.inter.IExcelDataHandler;
-import com.chengkun.utils.exception.ExcelImportException;
 import lombok.Data;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Hyperlink;
@@ -13,17 +13,17 @@ import org.apache.poi.ss.usermodel.Hyperlink;
 import java.util.Map;
 
 /**
- * @Description easypoi使用map导入数据处理
+ * @Description easypoi使用map导入数据处理，替换对应字段key
  * @Author chengkun
  * @Date 2020/3/18 19:57
  **/
 @Data
-public class MapImportHandler implements IExcelDataHandler<Map<String, Object>> {
+public class DefaultMapImportHandler implements IExcelDataHandler<Map<String, Object>> {
 
     //自定义标题行，用于校验格式是否正确
     public Map<String, Object> headerMap;
 
-    public MapImportHandler(Map<String, Object> headerMap) {
+    public DefaultMapImportHandler(Map<String, Object> headerMap) {
         this.headerMap = headerMap;
     }
 

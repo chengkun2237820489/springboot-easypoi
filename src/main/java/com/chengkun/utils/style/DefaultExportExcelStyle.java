@@ -10,7 +10,7 @@ import org.apache.poi.ss.usermodel.*;
  * @Author chengkun
  * @Date 2020/3/18 9:00
  **/
-public class ExportExcelStyle implements IExcelExportStyler {
+public class DefaultExportExcelStyle implements IExcelExportStyler {
     private static final short STRING_FORMAT = (short) BuiltinFormats.getBuiltinFormat("TEXT");
     private static final short FONT_SIZE_HEADER = 16;
     private static final short FONT_SIZE_DATA = 10;
@@ -28,7 +28,7 @@ public class ExportExcelStyle implements IExcelExportStyler {
      */
     private CellStyle styles;
 
-    public ExportExcelStyle(Workbook workbook) {
+    public DefaultExportExcelStyle(Workbook workbook) {
         this.init(workbook);
     }
 

@@ -77,4 +77,6 @@ public interface ExcelMapper {
      * @Return java.util.List<java.util.Map < java.lang.String, java.lang.Object>>
      **/
     List<Map<String, Object>> findPointList(ImmutableMap<String, String> of);
+
+    void insertPointList(List<InsightIec104Mapping> list);
 }

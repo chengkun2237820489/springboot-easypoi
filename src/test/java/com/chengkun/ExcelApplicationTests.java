@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -55,8 +56,28 @@ public class ExcelApplicationTests {
     }
 
     @Test
-    public void test3(){
-        List<Map<String, Object>> list = excelMapper.findAllByPointType(ImmutableMap.of("point_type","1"));
+    public void test3() {
+        List<Map<String, Object>> list = excelMapper.findAllByPointType(ImmutableMap.of("point_type", "1"));
         System.out.println(list);
+    }
+
+    @Test
+    public void test4() {
+        List<InsightIec104Mapping> list = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            InsightIec104Mapping iec104Mapping = new InsightIec104Mapping();
+            iec104Mapping.setChannelId("" + i);
+            iec104Mapping.setIecNegate("" + i);
+            iec104Mapping.setIecOffset("" + i);
+            iec104Mapping.setIecParameter("" + i);
+            iec104Mapping.setIecPoint(i);
+            iec104Mapping.setIsEnable("" + i);
+            iec104Mapping.setPointId(i);
+            iec104Mapping.setUuid(i);
+            iec104Mapping.setPointName("test" + i);
+            iec104Mapping.setPointType("" + i);
+            list.add(iec104Mapping);
+        }
+        excelMapper.insertPointList(list);
     }
 }
